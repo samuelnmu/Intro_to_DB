@@ -1,30 +1,27 @@
-import pymysql
+import mysql.connector
+from mysql.connector import Error
 
 def create_database():
     connection = None
     try:
         # Connect to MySQL server without specifying a database
-        connection = pymysql.connect(
+        connection = mysql.connector.connect(
             host='localhost',
-            user='root',          
-            password='assword',  
-            charset='utf8mb4',
-            cursorclass=pymysql.cursors.DictCursor
+            user='root',               
+            password='password'  
         )
 
-        with connection.cursor() as cursor:
-            # Create database if not exists 
-            sql = "CREATE DATABASE IF NOT EXISTS alx_book_store"
-            cursor.execute(sql)
+        if connection.is_connected():
+            cursor = connection.cursor()
+            cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store")
+            print("Database 'alx_book_store' created successfully!")
 
-        connection.commit()
-        print("Database 'alx_book_store' created successfully!")
-
-    except pymysql.MySQLError as e:
+    except Error as e:
         print(f"Error while connecting or creating database: {e}")
 
     finally:
-        if connection:
+        if connection is not None and connection.is_connected():
+            cursor.close()
             connection.close()
 
 if __name__ == "__main__":
